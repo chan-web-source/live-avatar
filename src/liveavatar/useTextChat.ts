@@ -3,6 +3,9 @@ import { useLiveAvatarContext } from "./context";
 import { sendAvatarSpeakText } from "./utils";
 import { Room } from "livekit-client";
 
+// TTS API configuration
+const TTS_API_URL = process.env.NEXT_PUBLIC_STT_API || "https://backend-ltedu.zeabur.app/";
+
 export const useTextChat = (mode: "FULL" | "CUSTOM") => {
   const { sessionRef, room, isStreamReady, sessionState } = useLiveAvatarContext();
 
@@ -94,50 +97,58 @@ export const useTextChat = (mode: "FULL" | "CUSTOM") => {
         }
       } else if (mode === "CUSTOM") {
         try {
-          const response = await fetch("/api/openai-chat-complete", {
+          // Use hardcoded message directly
+          const textToSpeak = "hi lucky how are you";
+
+          // Call your TTS API directly (matching textToSpeechTranscriptions function)
+          const body = {
+            refId: undefined,
+            module: "minimax",
+            model: "speech-01-turbo",
+            input: textToSpeak,
+            voice: "Chinese (Mandarin)_Male_Announcer",
+          };
+
+          const response = await fetch(`${TTS_API_URL}ai-voice-text/audio/tts`, {
             method: "POST",
-            body: JSON.stringify({
-              message: "hi lucky how are you hi lucky how are you hi lucky how are you hi lucky how are you hi lucky how are you hi lucky how are you",
-              text: "hi lucky how are you hi lucky how are you hi lucky how are you hi lucky how are you hi lucky how are you hi lucky how are you"
-            }),
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(body),
           });
 
           if (!response.ok) {
-            console.error("OpenAI API error:", response.status);
+            let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+            try {
+              const errorBody = await response.json();
+              if (errorBody && errorBody.message) {
+                errorMessage = errorBody.message;
+              } else if (errorBody && typeof errorBody === "object") {
+                errorMessage = JSON.stringify(errorBody);
+              }
+            } catch (e) {
+              try {
+                const textError = await response.text();
+                if (textError) errorMessage = textError;
+              } catch (innerE) {
+                // Ignore
+              }
+            }
+            console.error("TTS API error:", errorMessage);
             // Continue without audio - avatar will still show video
             return;
           }
 
           const data = await response.json();
-          const chatResponseText = data?.response || "hi lucky how are you hi lucky how are you hi lucky how are you hi lucky how are you hi lucky how are you hi lucky how are you";
+          // Extract audio from various possible response formats
+          const audio = data?.audio_base64 || data?.audio || data?.data?.audio_base64 || data?.data?.audio;
 
-          try {
-            const res = await fetch("/api/elevenlabs-text-to-speech", {
-              method: "POST",
-              body: JSON.stringify({
-                text: chatResponseText,
-              }),
-            });
-
-            if (!res.ok) {
-              console.error("ElevenLabs API error:", res.status);
-              // Continue without audio - avatar will still show video
-              return;
-            }
-
-            const audioData = await res.json();
-            const audio = audioData?.audio;
-
-            if (audio && sessionRef.current) {
-              // Have the avatar repeat the audio
-              return sessionRef.current.repeatAudio(audio);
-            }
-          } catch (audioError) {
-            console.error("Error generating audio:", audioError);
-            // Continue without audio - avatar will still show video
+          if (audio && sessionRef.current) {
+            // Have the avatar repeat the audio
+            return sessionRef.current.repeatAudio(audio);
           }
         } catch (error) {
-          console.error("Error in sendMessage:", error);
+          console.error("Error generating audio:", error);
           // Continue without audio - avatar will still show video
         }
       }
