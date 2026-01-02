@@ -24,6 +24,7 @@ export async function POST() {
           voice_id: VOICE_ID,
           context_id: CONTEXT_ID,
           language: LANGUAGE,
+          disable_greeting: true
         },
         // Removed initial message to prevent default greeting
       }),

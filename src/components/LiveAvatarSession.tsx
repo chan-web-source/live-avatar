@@ -57,6 +57,7 @@ const LiveAvatarSessionComponent: React.FC<{
 
   const { sendMessage } = useTextChat(mode);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     if (sessionState === SessionState.DISCONNECTED) {
@@ -69,6 +70,101 @@ const LiveAvatarSessionComponent: React.FC<{
       attachElement(videoRef.current);
     }
   }, [attachElement, isStreamReady]);
+
+  // Chroma key background removal effect
+  useEffect(() => {
+    if (!isStreamReady) return;
+
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+
+    if (!video || !canvas) return;
+
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
+    if (!ctx) return;
+
+    // Set canvas size to match video
+    const updateCanvasSize = () => {
+      if (video.videoWidth > 0 && video.videoHeight > 0) {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+      } else {
+        // Fallback to container size
+        const container = canvas.parentElement;
+        if (container) {
+          canvas.width = container.clientWidth;
+          canvas.height = container.clientHeight;
+        }
+      }
+    };
+
+    // Wait for video metadata
+    const handleLoadedMetadata = () => {
+      updateCanvasSize();
+    };
+
+    if (video.readyState >= video.HAVE_METADATA) {
+      updateCanvasSize();
+    }
+
+    video.addEventListener("loadedmetadata", handleLoadedMetadata);
+
+    // Chroma key color to remove (#7ac769)
+    const chromaColor = { r: 122, g: 199, b: 105 };
+    const threshold = 50; // Color matching threshold
+
+    let animationFrameId: number;
+
+    const drawFrame = () => {
+      if (video.readyState >= video.HAVE_CURRENT_DATA && video.videoWidth > 0 && video.videoHeight > 0) {
+        // Update canvas size if video dimensions changed
+        if (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight) {
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+        }
+
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
+
+        // Process each pixel
+        for (let i = 0; i < data.length; i += 4) {
+          const r = data[i];
+          const g = data[i + 1];
+          const b = data[i + 2];
+
+          // Calculate color distance
+          const distance = Math.sqrt(
+            Math.pow(r - chromaColor.r, 2) +
+            Math.pow(g - chromaColor.g, 2) +
+            Math.pow(b - chromaColor.b, 2)
+          );
+
+          // If color is close to chroma key, make it transparent
+          if (distance < threshold) {
+            data[i + 3] = 0; // Set alpha to 0 (transparent)
+          }
+        }
+
+        ctx.putImageData(imageData, 0, 0);
+      }
+      animationFrameId = requestAnimationFrame(drawFrame);
+    };
+
+    // Start drawing after a small delay to ensure video is ready
+    const timeoutId = setTimeout(() => {
+      drawFrame();
+    }, 100);
+
+    return () => {
+      clearTimeout(timeoutId);
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+      }
+      video.removeEventListener("loadedmetadata", handleLoadedMetadata);
+    };
+  }, [isStreamReady]);
 
   useEffect(() => {
     if (sessionState === SessionState.INACTIVE) {
@@ -117,6 +213,12 @@ const LiveAvatarSessionComponent: React.FC<{
           autoPlay
           playsInline
           className="w-full h-full object-contain"
+          style={{ position: "absolute", opacity: 0, pointerEvents: "none" }}
+        />
+        <canvas
+          ref={canvasRef}
+          className="w-full h-full object-contain"
+          style={{ position: "relative", zIndex: 1 }}
         />
         <button
           className="absolute bottom-4 right-4 bg-white text-black px-4 py-2 rounded-md"
