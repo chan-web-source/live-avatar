@@ -6,10 +6,10 @@ import {
   useSession,
   useTextChat,
   // useVoiceChat,
-} from "../liveavatar";
-import { useLiveAvatarContext } from "../liveavatar/context";
+} from "../utils";
+import { useLiveAvatarContext } from "../utils/context";
 import { SessionState } from "@heygen/liveavatar-web-sdk";
-import { useAvatarActions } from "../liveavatar/useAvatarActions";
+import { useAvatarActions } from "../utils/useAvatarActions";
 
 const Button: React.FC<{
   onClick: () => void;
