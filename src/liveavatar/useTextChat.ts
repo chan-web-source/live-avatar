@@ -14,8 +14,13 @@ export const useTextChat = (mode: "FULL" | "CUSTOM") => {
     async (message: string) => {
       if (mode === "FULL") {
         try {
-          // Use hardcoded message
-          const textToSpeak = "hi lucky 你怎麽樣 hi lucky 你怎麽樣 hi lucky 你怎麽樣 hi lucky 你怎麽樣 ";
+          // Use the provided message
+          const textToSpeak = message || "";
+
+          if (!textToSpeak.trim()) {
+            console.warn("Empty message, nothing to send");
+            return;
+          }
 
           // Helper function to get room and check if it's ready
           const getReadyRoom = (): Room | null => {
@@ -98,8 +103,13 @@ export const useTextChat = (mode: "FULL" | "CUSTOM") => {
         }
       } else if (mode === "CUSTOM") {
         try {
-          // Use hardcoded message directly
-          const textToSpeak = "hey lucky你好嗎，hey lucky你好嗎，hey lucky你好嗎";
+          // Use the provided message
+          const textToSpeak = message || "";
+
+          if (!textToSpeak.trim()) {
+            console.warn("Empty message, nothing to send");
+            return;
+          }
 
           // Call your TTS API directly (matching textToSpeechTranscriptions function)
           const body = {

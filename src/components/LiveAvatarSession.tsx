@@ -198,9 +198,6 @@ const LiveAvatarSessionComponent: React.FC<{
         Stop
       </button>
       <div className="w-full h-full flex flex-col items-center justify-center gap-4">
-        <p className="text-lg text-white">Session state: <span className="font-semibold">{sessionState}</span></p>
-        <p className="text-lg text-white">Connection quality: <span className="font-semibold">{connectionQuality}</span></p>
-        <p className="text-lg text-white">Avatar talking: <span className="font-semibold">{isAvatarTalking ? "true" : "false"}</span></p>
         <Button
           onClick={() => {
             setIsAvatarAudioMuted(!isAvatarAudioMuted);
@@ -218,19 +215,23 @@ const LiveAvatarSessionComponent: React.FC<{
           />
           <Button
             onClick={() => {
-              // Always use hardcoded message
-              sendMessage("hi lucky 你怎麽樣 hi lucky 你怎麽樣 hi lucky 你怎麽樣 hi lucky 你怎麽樣 ");
-              setMessage("");
+              if (message.trim()) {
+                sendMessage(message);
+                setMessage("");
+              }
             }}
+            disabled={!message.trim()}
           >
             Send
           </Button>
           <Button
             onClick={() => {
-              // Always use hardcoded message
-              repeat("hi lucky 你怎麽樣 hi lucky 你怎麽樣 hi lucky 你怎麽樣 hi lucky 你怎麽樣 ");
-              setMessage("");
+              if (message.trim()) {
+                repeat(message);
+                setMessage("");
+              }
             }}
+            disabled={!message.trim()}
           >
             Repeat
           </Button>

@@ -15,12 +15,24 @@ export const useAvatarActions = (mode: "FULL" | "CUSTOM") => {
   const repeat = useCallback(
     async (message: string) => {
       if (mode === "FULL") {
-        // Use hardcoded message for FULL mode
-        return sessionRef.current.repeat("hi lucky 你怎麽樣 hi lucky 你怎麽樣 hi lucky 你怎麽樣 hi lucky 你怎麽樣 ");
+        // Use the provided message for FULL mode
+        const textToSpeak = message || "";
+        
+        if (!textToSpeak.trim()) {
+          console.warn("Empty message, nothing to repeat");
+          return;
+        }
+        
+        return sessionRef.current.repeat(textToSpeak);
       } else if (mode === "CUSTOM") {
         try {
-          // Use hardcoded message directly
-          const textToSpeak = "hi lucky 你怎麽樣 hi lucky 你怎麽樣 hi lucky 你怎麽樣 hi lucky 你怎麽樣 ";
+          // Use the provided message
+          const textToSpeak = message || "";
+          
+          if (!textToSpeak.trim()) {
+            console.warn("Empty message, nothing to repeat");
+            return;
+          }
 
           // Call your custom TTS API directly (matching useTextChat.ts pattern)
           const body = {
