@@ -1,25 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { LiveAvatarSession } from "./LiveAvatarSession";
+import { LiveAvatarSession } from "./streaming-avatar";
+import { startFullModeSession, startCustomModeSession } from "../liveavatar/api";
 
 export const LiveAvatarSection = () => {
   const [sessionToken, setSessionToken] = useState("");
   const [mode, setMode] = useState<"FULL" | "CUSTOM">("FULL");
   const [error, setError] = useState<string | null>(null);
 
-  const handleStart = async () => {
+  const handleStartFullModeSession = async () => {
     try {
-      const res = await fetch("/api/start-session", {
-        method: "POST",
-        body: JSON.stringify({}),
-      });
-      if (!res.ok) {
-        const error = await res.json();
-        setError(error.error);
-        return;
-      }
-      const { session_token } = await res.json();
+      const { session_token } = await startFullModeSession();
       setSessionToken(session_token);
       setMode("FULL");
     } catch (error: unknown) {
@@ -27,18 +19,14 @@ export const LiveAvatarSection = () => {
     }
   };
 
-  const handleStartCustom = async () => {
-    const res = await fetch("/api/start-custom-session", {
-      method: "POST",
-    });
-    if (!res.ok) {
-      const error = await res.json();
-      setError(error.error);
-      return;
+  const handleStartCustomModeSession = async () => {
+    try {
+      const { session_token } = await startCustomModeSession();
+      setSessionToken(session_token);
+      setMode("CUSTOM");
+    } catch (error: unknown) {
+      setError((error as Error).message);
     }
-    const { session_token } = await res.json();
-    setSessionToken(session_token);
-    setMode("CUSTOM");
   };
 
   const onSessionStopped = () => {
@@ -56,14 +44,14 @@ export const LiveAvatarSection = () => {
             </div>
           )}
           <button
-            onClick={handleStart}
+            onClick={handleStartFullModeSession}
             className="w-fit bg-white text-black px-6 py-3 rounded-md text-xl font-semibold"
           >
             Start Full Avatar Session
           </button>
 
           <button
-            onClick={handleStartCustom}
+            onClick={handleStartCustomModeSession}
             className="w-fit bg-white text-black px-6 py-3 rounded-md text-xl font-semibold"
           >
             Start Custom Avatar Session
