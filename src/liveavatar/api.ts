@@ -1,4 +1,8 @@
 import { fetchMp3AsBase64, fetchMp3AsPcmBase64 } from "./audioUtils";
+import {
+ startFullModeStreamingSessionToken,
+ startCustomModeStreamingSessionToken
+} from "../../app/api/api";
 
 // TTS API configuration
 const TTS_API_URL = process.env.NEXT_PUBLIC_STT_API || "https://backend-ltedu.zeabur.app/";
@@ -8,17 +12,15 @@ const TTS_API_URL = process.env.NEXT_PUBLIC_STT_API || "https://backend-ltedu.ze
  * @returns Promise with session_token and session_id
  */
 export async function startFullModeSession(): Promise<{ session_token: string; session_id?: string }> {
- const res = await fetch("/api/start-session", {
-  method: "POST",
-  body: JSON.stringify({}),
- });
+ // Call the API function directly from app/api/api.ts
+ const response = await startFullModeStreamingSessionToken();
 
- if (!res.ok) {
-  const error = await res.json();
+ if (!response.ok) {
+  const error = await response.json();
   throw new Error(error.error || "Failed to start full mode session");
  }
 
- const data = await res.json();
+ const data = await response.json();
  return {
   session_token: data.session_token,
   session_id: data.session_id,
@@ -30,16 +32,15 @@ export async function startFullModeSession(): Promise<{ session_token: string; s
  * @returns Promise with session_token and session_id
  */
 export async function startCustomModeSession(): Promise<{ session_token: string; session_id?: string }> {
- const res = await fetch("/api/start-custom-session", {
-  method: "POST",
- });
+ // Call the API function directly from app/api/api.ts
+ const response = await startCustomModeStreamingSessionToken();
 
- if (!res.ok) {
-  const error = await res.json();
+ if (!response.ok) {
+  const error = await response.json();
   throw new Error(error.error || "Failed to start custom mode session");
  }
 
- const data = await res.json();
+ const data = await response.json();
  return {
   session_token: data.session_token,
   session_id: data.session_id,
