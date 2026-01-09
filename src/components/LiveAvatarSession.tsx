@@ -7,6 +7,7 @@ import {
   useTextChat,
   useVoiceChat,
 } from "../liveavatar";
+import { useLiveAvatarContext } from "../liveavatar/context";
 import { SessionState } from "@heygen/liveavatar-web-sdk";
 import { useAvatarActions } from "../liveavatar/useAvatarActions";
 
@@ -19,7 +20,7 @@ const Button: React.FC<{
     <button
       onClick={onClick}
       disabled={disabled}
-      className="bg-white text-black px-4 py-2 rounded-md"
+      className="bg-gradient-to-br from-[#d4af37] to-[#b8941f] text-white px-4 py-2 rounded-md font-semibold shadow-md hover:shadow-lg transition-shadow disabled:opacity-50 disabled:cursor-not-allowed"
     >
       {children}
     </button>
@@ -37,27 +38,20 @@ const LiveAvatarSessionComponent: React.FC<{
     startSession,
     stopSession,
     connectionQuality,
-    keepAlive,
     attachElement,
   } = useSession();
   const {
     isAvatarTalking,
-    isUserTalking,
-    isMuted,
-    isActive,
-    isLoading,
-    start,
-    stop,
-    mute,
-    unmute,
-  } = useVoiceChat();
+  } = useLiveAvatarContext();
 
-  const { interrupt, repeat, startListening, stopListening } =
-    useAvatarActions(mode);
+  const { isMuted, mute, unmute } = useVoiceChat();
+
+  const { repeat } = useAvatarActions(mode);
 
   const { sendMessage } = useTextChat(mode);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [isAvatarAudioMuted, setIsAvatarAudioMuted] = useState(false);
 
   useEffect(() => {
     if (sessionState === SessionState.DISCONNECTED) {
@@ -70,6 +64,14 @@ const LiveAvatarSessionComponent: React.FC<{
       attachElement(videoRef.current);
     }
   }, [attachElement, isStreamReady]);
+
+  // Control avatar audio output (mute/unmute the video element)
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.muted = isAvatarAudioMuted;
+      videoRef.current.volume = isAvatarAudioMuted ? 0 : 1;
+    }
+  }, [isAvatarAudioMuted]);
 
   // Chroma key background removal effect
   useEffect(() => {
@@ -172,38 +174,6 @@ const LiveAvatarSessionComponent: React.FC<{
     }
   }, [startSession, sessionState]);
 
-  const VoiceChatComponents = (
-    <>
-      <p>Voice Chat Active: {isActive ? "true" : "false"}</p>
-      <p>Voice Chat Loading: {isLoading ? "true" : "false"}</p>
-      {isActive && <p>Muted: {isMuted ? "true" : "false"}</p>}
-      <Button
-        onClick={() => {
-          if (isActive) {
-            stop();
-          } else {
-            start();
-          }
-        }}
-        disabled={isLoading}
-      >
-        {isActive ? "Stop Voice Chat" : "Start Voice Chat"}
-      </Button>
-      {isActive && (
-        <Button
-          onClick={() => {
-            if (isMuted) {
-              unmute();
-            } else {
-              mute();
-            }
-          }}
-        >
-          {isMuted ? "Unmute" : "Mute"}
-        </Button>
-      )}
-    </>
-  );
 
   return (
     <div className="w-[1080px] max-w-full h-full flex flex-col items-center justify-center gap-4 py-4 relative">
@@ -228,54 +198,28 @@ const LiveAvatarSessionComponent: React.FC<{
         Stop
       </button>
       <div className="w-full h-full flex flex-col items-center justify-center gap-4">
-        <p>Session state: {sessionState}</p>
-        <p>Connection quality: {connectionQuality}</p>
-        {mode === "FULL" && (
-          <p>User talking: {isUserTalking ? "true" : "false"}</p>
-        )}
-        <p>Avatar talking: {isAvatarTalking ? "true" : "false"}</p>
-        {mode === "FULL" && VoiceChatComponents}
+        <p className="text-lg text-white">Session state: <span className="font-semibold">{sessionState}</span></p>
+        <p className="text-lg text-white">Connection quality: <span className="font-semibold">{connectionQuality}</span></p>
+        <p className="text-lg text-white">Avatar talking: <span className="font-semibold">{isAvatarTalking ? "true" : "false"}</span></p>
         <Button
           onClick={() => {
-            keepAlive();
+            setIsAvatarAudioMuted(!isAvatarAudioMuted);
           }}
         >
-          Keep Alive
+          {isAvatarAudioMuted ? "Unmute Avatar" : "Mute Avatar"}
         </Button>
-        <div className="w-full h-full flex flex-row items-center justify-center gap-4">
-          <Button
-            onClick={() => {
-              startListening();
-            }}
-          >
-            Start Listening
-          </Button>
-          <Button
-            onClick={() => {
-              stopListening();
-            }}
-          >
-            Stop Listening
-          </Button>
-          <Button
-            onClick={() => {
-              interrupt();
-            }}
-          >
-            Interrupt
-          </Button>
-        </div>
         <div className="w-full h-full flex flex-row items-center justify-center gap-4">
           <input
             type="text"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            className="w-[400px] bg-white text-black px-4 py-2 rounded-md"
+            className="w-[400px] bg-white/10 text-white border border-white/20 px-4 py-2 rounded-md placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-[#d4af37]"
+            placeholder="Enter message..."
           />
           <Button
             onClick={() => {
               // Always use hardcoded message
-              sendMessage("hi lucky how are you hi lucky how are you hi lucky how are you hi lucky how are you hi lucky how are you hi lucky how are you");
+              sendMessage("hi lucky 你怎麽樣 hi lucky 你怎麽樣 hi lucky 你怎麽樣 hi lucky 你怎麽樣 ");
               setMessage("");
             }}
           >
@@ -284,7 +228,7 @@ const LiveAvatarSessionComponent: React.FC<{
           <Button
             onClick={() => {
               // Always use hardcoded message
-              repeat("hi lucky how are you hi lucky how are you hi lucky how are you hi lucky how are you hi lucky how are you hi lucky how are you");
+              repeat("hi lucky 你怎麽樣 hi lucky 你怎麽樣 hi lucky 你怎麽樣 hi lucky 你怎麽樣 ");
               setMessage("");
             }}
           >
