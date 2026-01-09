@@ -1,5 +1,5 @@
-import { LiveAvatarDemo } from "../src/components/LiveAvatarDemo";
+import { LiveAvatarSection } from "../src/components/LiveAvatarSection";
 
 export default function Home() {
-  return <LiveAvatarDemo />;
+  return <LiveAvatarSection />;
 }

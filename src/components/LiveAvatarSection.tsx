@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { LiveAvatarSession } from "./LiveAvatarSession";
 
-export const LiveAvatarDemo = () => {
+export const LiveAvatarSection = () => {
   const [sessionToken, setSessionToken] = useState("");
   const [mode, setMode] = useState<"FULL" | "CUSTOM">("FULL");
   const [error, setError] = useState<string | null>(null);
