@@ -9,7 +9,7 @@ import {
   AgentEventsEnum,
 } from "@heygen/liveavatar-web-sdk";
 import { LiveAvatarSessionMessage } from "./types";
-import { API_URL } from "../../app/api/secrets";
+import { API_URL } from "../hooks/secrets";
 import { Room } from "livekit-client";
 
 type LiveAvatarContextProps = {

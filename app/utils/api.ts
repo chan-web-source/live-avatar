@@ -2,7 +2,7 @@ import { fetchMp3AsBase64, fetchMp3AsPcmBase64 } from "./audioUtils";
 import {
  startFullModeStreamingSessionToken,
  startCustomModeStreamingSessionToken
-} from "../../app/api/api";
+} from "../hooks/api";
 
 // TTS API configuration
 const TTS_API_URL = process.env.NEXT_PUBLIC_STT_API || "https://backend-ltedu.zeabur.app/";
@@ -12,7 +12,7 @@ const TTS_API_URL = process.env.NEXT_PUBLIC_STT_API || "https://backend-ltedu.ze
  * @returns Promise with session_token and session_id
  */
 export async function startFullModeSession(): Promise<{ session_token: string; session_id?: string }> {
- // Call the API function directly from app/api/api.ts
+ // Call the API function directly from app/hooks/api.ts
  const response = await startFullModeStreamingSessionToken();
 
  if (!response.ok) {
@@ -32,7 +32,7 @@ export async function startFullModeSession(): Promise<{ session_token: string; s
  * @returns Promise with session_token and session_id
  */
 export async function startCustomModeSession(): Promise<{ session_token: string; session_id?: string }> {
- // Call the API function directly from app/api/api.ts
+ // Call the API function directly from app/hooks/api.ts
  const response = await startCustomModeStreamingSessionToken();
 
  if (!response.ok) {
