@@ -12,13 +12,13 @@ export const useAvatarActions = (mode: "FULL" | "CUSTOM") => {
     async (message: string) => {
       if (mode === "FULL") {
         // Use hardcoded message for FULL mode
-        return sessionRef.current.repeat("hi lucky how are you hi lucky how are you hi lucky how are you hi lucky how are you hi lucky how are you hi lucky how are you");
+        return sessionRef.current.repeat("hi lucky 你怎麽樣 hi lucky 你怎麽樣 hi lucky 你怎麽樣 hi lucky 你怎麽樣 ");
       } else if (mode === "CUSTOM") {
         try {
           const res = await fetch("/api/elevenlabs-text-to-speech", {
             method: "POST",
             body: JSON.stringify({
-              text: "hi lucky how are you hi lucky how are you hi lucky how are you hi lucky how are you hi lucky how are you hi lucky how are you",
+              text: "hi lucky 你怎麽樣 hi lucky 你怎麽樣 hi lucky 你怎麽樣 hi lucky 你怎麽樣 ",
             }),
           });
 
