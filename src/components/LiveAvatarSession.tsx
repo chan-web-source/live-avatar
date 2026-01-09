@@ -206,7 +206,7 @@ const LiveAvatarSessionComponent: React.FC<{
   );
 
   return (
-    <div className="w-[1080px] max-w-full h-full flex flex-col items-center justify-center gap-4 py-4">
+    <div className="w-[1080px] max-w-full h-full flex flex-col items-center justify-center gap-4 py-4 relative">
       <div className="relative w-full aspect-video overflow-hidden flex flex-col items-center justify-center">
         <video
           ref={videoRef}
@@ -220,13 +220,13 @@ const LiveAvatarSessionComponent: React.FC<{
           className="w-full h-full object-contain"
           style={{ position: "relative", zIndex: 1 }}
         />
-        <button
-          className="absolute bottom-4 right-4 bg-white text-black px-4 py-2 rounded-md"
-          onClick={() => stopSession()}
-        >
-          Stop
-        </button>
       </div>
+      <button
+        className="fixed bottom-4 right-4 bg-gradient-to-br from-[#d4af37] to-[#b8941f] text-white px-4 py-2 rounded-md font-semibold shadow-md hover:shadow-lg transition-shadow z-50"
+        onClick={() => stopSession()}
+      >
+        Stop
+      </button>
       <div className="w-full h-full flex flex-col items-center justify-center gap-4">
         <p>Session state: {sessionState}</p>
         <p>Connection quality: {connectionQuality}</p>

@@ -12,7 +12,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="zh-CN">
       <body className="bg-zinc-900 flex flex-col min-h-screen text-white justify-center items-center text-lg">
         {children}
       </body>

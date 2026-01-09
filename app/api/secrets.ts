@@ -8,6 +8,8 @@ export const AVATAR_ID = "a5fa5ce0-156c-41ac-89f7-f72ec0eac8c0"
 export const VOICE_ID = "c2527536-6d1f-4412-a643-53a3497dada9";
 export const CONTEXT_ID = "5b9dba8a-aa31-11f0-a6ee-066a7fa2e369";
 export const LANGUAGE = "en";
+// tried: "cn", "zh-CN", "zh", "zh-cn", 
+// "zh" works for FULL mode, but no more replies
 
 // CUSTOM MODE Customizations
 export const ELEVENLABS_API_KEY = "64370ba2-c4ef-11f0-a99e-066a7fa2e369";
