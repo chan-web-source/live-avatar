@@ -5,7 +5,7 @@ import {
   LiveAvatarContextProvider,
   useSession,
   useTextChat,
-  useVoiceChat,
+  // useVoiceChat,
 } from "../liveavatar";
 import { useLiveAvatarContext } from "../liveavatar/context";
 import { SessionState } from "@heygen/liveavatar-web-sdk";
@@ -44,7 +44,7 @@ const LiveAvatarSessionComponent: React.FC<{
     isAvatarTalking,
   } = useLiveAvatarContext();
 
-  const { isMuted, mute, unmute } = useVoiceChat();
+  // const { isMuted, mute, unmute } = useVoiceChat();
 
   const { repeat } = useAvatarActions(mode);
 
@@ -198,13 +198,6 @@ const LiveAvatarSessionComponent: React.FC<{
         Stop
       </button>
       <div className="w-full h-full flex flex-col items-center justify-center gap-4">
-        <Button
-          onClick={() => {
-            setIsAvatarAudioMuted(!isAvatarAudioMuted);
-          }}
-        >
-          {isAvatarAudioMuted ? "Unmute Avatar" : "Mute Avatar"}
-        </Button>
         <div className="w-full h-full flex flex-row items-center justify-center gap-4">
           <input
             type="text"
