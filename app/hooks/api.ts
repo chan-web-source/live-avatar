@@ -124,6 +124,23 @@ export async function startCustomModeStreamingSessionToken() {
  });
 }
 
+// Start Custom Mode Session (wrapper function)
+export async function startCustomModeSession(): Promise<{ session_token: string; session_id?: string }> {
+ // Call the API function directly from app/hooks/api.ts
+ const response = await startCustomModeStreamingSessionToken();
+
+ if (!response.ok) {
+  const error = await response.json();
+  throw new Error(error.error || "Failed to start custom mode session");
+ }
+
+ const data = await response.json();
+ return {
+  session_token: data.session_token,
+  session_id: data.session_id,
+ };
+}
+
 // Stop Streaming Session
 export async function stopStreamingSession(request: Request) {
  try {

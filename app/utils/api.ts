@@ -27,25 +27,6 @@ export async function startFullModeSession(): Promise<{ session_token: string; s
  };
 }
 
-/**
- * Start a Custom Mode streaming session
- * @returns Promise with session_token and session_id
- */
-export async function startCustomModeSession(): Promise<{ session_token: string; session_id?: string }> {
- // Call the API function directly from app/hooks/api.ts
- const response = await startCustomModeStreamingSessionToken();
-
- if (!response.ok) {
-  const error = await response.json();
-  throw new Error(error.error || "Failed to start custom mode session");
- }
-
- const data = await response.json();
- return {
-  session_token: data.session_token,
-  session_id: data.session_id,
- };
-}
 
 /**
  * Call custom TTS API to generate speech from text

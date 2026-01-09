@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { LiveAvatarSession } from "./streaming-avatar";
-import { startFullModeSession, startCustomModeSession } from "../utils/api";
+import { startFullModeSession } from "../utils/api";
+import { startCustomModeSession } from "../hooks/api";
 
 export const LiveAvatarSection = () => {
   const [sessionToken, setSessionToken] = useState("");
