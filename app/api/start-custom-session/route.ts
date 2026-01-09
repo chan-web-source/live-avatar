@@ -1,6 +1,6 @@
 import { API_KEY, API_URL, AVATAR_ID } from "../secrets";
 
-export async function POST() {
+async function startCustomModeStreamingSessionToken() {
   let session_token = "";
   let session_id = "";
   try {
@@ -59,3 +59,6 @@ export async function POST() {
     },
   });
 }
+
+// Export as POST for Next.js route handler
+export { startCustomModeStreamingSessionToken as POST };

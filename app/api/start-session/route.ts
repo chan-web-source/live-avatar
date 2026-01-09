@@ -7,7 +7,7 @@ import {
   LANGUAGE,
 } from "../secrets";
 
-export async function POST() {
+async function startFullModeStreamingSessionToken() {
   let session_token = "";
   let session_id = "";
   try {
@@ -60,3 +60,6 @@ export async function POST() {
     },
   });
 }
+
+// Export as POST for Next.js route handler
+export { startFullModeStreamingSessionToken as POST };

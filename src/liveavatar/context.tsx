@@ -62,7 +62,7 @@ const useSessionState = (sessionRef: React.RefObject<LiveAvatarSession>) => {
   useEffect(() => {
     if (sessionRef.current) {
       const sessionAny = sessionRef.current as any;
-      
+
       // Function to try to get the room
       const tryGetRoom = () => {
         let foundRoom: Room | null = null;
